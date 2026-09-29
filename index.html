@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trading Signal App</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#07111f;
+ color:white;
+}
+header{
+ padding:20px 16px;
+ background:#101d31;
+}
+h1{margin:0;font-size:24px}
+.sub{color:#9aa9bd;font-size:12px;margin-top:6px}
+
+.tabs{
+ display:flex;
+ gap:8px;
+ padding:12px;
+ overflow:auto;
+ background:#101d31;
+}
+.tabs button{
+ border:0;
+ border-radius:20px;
+ padding:10px 16px;
+ background:#25344b;
+ color:white;
+ font-weight:bold;
+}
+.tabs button.active{background:#1976ff}
+
+.card{
+ margin:14px;
+ padding:18px;
+ background:#111f34;
+ border:1px solid #263952;
+ border-radius:18px;
+}
+.row{
+ display:flex;
+ justify-content:space-between;
+}
+.symbol{font-size:19px;font-weight:bold}
+.price{font-size:32px;font-weight:bold;margin-top:10px}
+
+.up{color:#22c55e}
+.down{color:#ef4444}
+
+.signal{
+ margin-top:18px;
+ padding:15px;
+ border-radius:14px;
+ background:#182941;
+}
+
+.badge{
+ display:inline-block;
+ padding:8px 13px;
+ border-radius:20px;
+ font-weight:bold;
+}
+.buy{background:#14532d;color:#86efac}
+.sell{background:#7f1d1d;color:#fecaca}
+
+.grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+ margin-top:14px;
+}
+.box{
+ background:#20314a;
+ padding:13px;
+ border-radius:12px;
+}
+.label{
+ color:#94a3b8;
+ font-size:11px;
+}
+.value{
+ margin-top:6px;
+ font-size:15px;
+ font-weight:bold;
+}
+
+.refresh{
+ width:calc(100% - 28px);
+ margin:0 14px 14px;
+ padding:14px;
+ border:0;
+ border-radius:12px;
+ background:#1976ff;
+ color:white;
+ font-weight:bold;
+ font-size:16px;
+}
+footer{
+ text-align:center;
+ color:#718096;
+ font-size:11px;
+ padding:20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>📈 Trading Signal App</h1>
+<div class="sub">Market Signal Dashboard</div>
+</header>
+
+<div class="tabs">
+<button class="active" onclick="changeMarket('NIFTY 50',25000)">NIFTY</button>
+<button onclick="changeMarket('BANK NIFTY',57500)">BANKNIFTY</button>
+<button onclick="changeMarket('SENSEX',82000)">SENSEX</button>
+</div>
+
+<div id="app"></div>
+
+<button class="refresh" onclick="generateSignal()">
+🔄 Refresh Signal
+</button>
+
+<footer>
+Demo signal only. Live market data/API is not connected yet.
+</footer>
+
+<script>
+
+let market="NIFTY 50";
+let base=25000;
+
+function changeMarket(name,value){
+
+ market=name;
+ base=value;
+
+ document.querySelectorAll(".tabs button")
+ .forEach(b=>b.classList.remove("active"));
+
+ event.target.classList.add("active");
+
+ generateSignal();
+}
+
+function generateSignal(){
+
+ let move=(Math.random()-0.5)*200;
+ let price=base+move;
+
+ let bullish=move>=0;
+
+ let direction=bullish ? "BULLISH" : "BEARISH";
+ let action=bullish ? "BUY" : "SELL";
+
+ let sl=bullish ? price-80 : price+80;
+ let target=bullish ? price+150 : price-150;
+
+ document.getElementById("app").innerHTML=`
+
+ <div class="card">
+
+   <div class="row">
+
+     <div>
+       <div class="symbol">${market}</div>
+       <div class="price">${price.toFixed(2)}</div>
+     </div>
+
+     <div class="${bullish?'up':'down'}">
+       ${bullish?'▲':'▼'} ${Math.abs(move).toFixed(2)}
+     </div>
+
+   </div>
+
+   <div class="signal">
+
+     <span class="badge ${bullish?'buy':'sell'}">
+       ${action} / ${direction}
+     </span>
+
+     <div class="grid">
+
+       <div class="box">
+         <div class="label">5 MIN</div>
+         <div class="value ${bullish?'up':'down'}">
+           ${bullish?'UP':'DOWN'}
+         </div>
+       </div>
+
+       <div class="box">
+         <div class="label">15 MIN</div>
+         <div class="value ${bullish?'up':'down'}">
+           ${bullish?'UP':'DOWN'}
+         </div>
+       </div>
+
+       <div class="box">
+         <div class="label">30 MIN</div>
+         <div class="value ${bullish?'up':'down'}">
+           ${bullish?'UP':'DOWN'}
+         </div>
+       </div>
+
+       <div class="box">
+         <div class="label">1 HOUR</div>
+         <div class="value ${bullish?'up':'down'}">
+           ${bullish?'UP':'DOWN'}
+         </div>
+       </div>
+
+     </div>
+
+     <div class="grid">
+
+       <div class="box">
+         <div class="label">STOP LOSS</div>
+         <div class="value">${sl.toFixed(2)}</div>
+       </div>
+
+       <div class="box">
+         <div class="label">TARGET</div>
+         <div class="value">${target.toFixed(2)}</div>
+       </div>
+
+     </div>
+
+   </div>
+
+ </div>
+ `;
+}
+
+generateSignal();
+
+</script>
+
+</body>
+</html>
